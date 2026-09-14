@@ -1,0 +1,212 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Triangular Arbitrage &amp; Comercial Mexicana</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#667eea;--secondary:#764ba2;--accent:#f093fb;--warning:#ffc107;--success:#4caf50;--danger:#f44336}
+html,body{background:#000;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;scroll-behavior:smooth}
+#three-canvas{position:fixed;inset:0;height:100vh;z-index:1;pointer-events:none}
+.bg-canvas{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at top,#1a1a2e 0%,#0a0a0a 50%,#000 100%)}
+.orb-container{position:fixed;inset:0;z-index:1;overflow:hidden;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(8vw);opacity:0;animation:orbFloat 25s infinite ease-in-out}
+.orb-1{width:42vw;height:42vw;background:radial-gradient(circle,var(--primary),transparent);top:-20%;left:-10%}
+.orb-2{width:35vw;height:35vw;background:radial-gradient(circle,var(--accent),transparent);bottom:-15%;right:-10%;animation-delay:8s}
+.orb-3{width:28vw;height:28vw;background:radial-gradient(circle,var(--secondary),transparent);top:40%;right:20%;animation-delay:16s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1);opacity:.15}25%{transform:translate(6vw,-9vw) scale(1.2);opacity:.25}50%{transform:translate(-3vw,6vw) scale(.9);opacity:.2}75%{transform:translate(9vw,3vw) scale(1.1);opacity:.18}}
+.noise{position:fixed;inset:0;opacity:.03;z-index:1000;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.pg{position:fixed;top:0;left:0;width:0;height:.28vh;background:linear-gradient(90deg,var(--primary),var(--accent));z-index:1001;box-shadow:0 0 1.4vh var(--primary)}
+.container{position:relative;z-index:10}
+section{height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;perspective:150vw;
+ opacity:0;transform:translateY(4vh);transition:opacity 1.1s cubic-bezier(.2,.6,.3,1),transform 1.1s cubic-bezier(.2,.6,.3,1)}
+section.visible{opacity:1;transform:none}
+.stage{position:relative;width:min(93vw,165.33vh);aspect-ratio:16/9;container-type:size;
+ transform-style:preserve-3d;will-change:transform;
+ transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .55s cubic-bezier(.2,.7,.3,1)}
+.kick{position:absolute;left:5.625%;top:7.6%;font-size:.95cqw;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:rgba(255,255,255,.32)}
+.hd{position:absolute;left:5.625%;top:11.3%;font-size:4cqw;font-weight:800;letter-spacing:-.032em;line-height:1.18;padding-bottom:.08em;
+ background:linear-gradient(135deg,#fff,rgba(255,255,255,.66));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.big{position:absolute;left:5.625%;top:27%;font-size:8.5cqw;font-weight:900;letter-spacing:-.05em;line-height:1.04;padding-bottom:.06em;
+ background:linear-gradient(135deg,#fff 0%,var(--primary) 58%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+ animation:tg 4s ease-in-out infinite}
+@keyframes tg{0%,100%{filter:drop-shadow(0 0 2.5cqw rgba(102,126,234,.4))}50%{filter:drop-shadow(0 0 3.8cqw rgba(240,147,251,.6))}}
+.foot{position:absolute;left:5.625%;bottom:4.6%;font-size:.8cqw;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.2);font-weight:600}
+.pgn{position:absolute;right:5.625%;bottom:4.4%;font-size:.9cqw;letter-spacing:.18em;color:rgba(255,255,255,.26);font-weight:600;font-variant-numeric:tabular-nums}
+.b{position:absolute;background:linear-gradient(150deg,rgba(255,255,255,.085) 0%,rgba(255,255,255,.022) 100%);
+ backdrop-filter:blur(2.1cqw);-webkit-backdrop-filter:blur(2.1cqw);border:none;border-radius:1.6cqw;
+ padding:1.9cqw 2.1cqw;box-shadow:0 2.1cqw 5cqw rgba(0,0,0,.55);display:flex;flex-direction:column;justify-content:center;
+ transition:box-shadow .5s ease,background .5s ease}
+.b.t{justify-content:flex-start}
+.b:hover{background:linear-gradient(150deg,rgba(255,255,255,.115) 0%,rgba(255,255,255,.03) 100%);box-shadow:0 2.7cqw 6.2cqw rgba(102,126,234,.3)}
+.lab{font-size:.88cqw;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.4);font-weight:700;margin-bottom:1.1cqw;flex:none}
+.n{font-size:3.6cqw;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.12;padding-bottom:.05em;flex:none}
+.n.s{font-size:2.6cqw}.n.m{font-size:2.1cqw}.n.xl{font-size:7cqw;font-weight:900}
+.g{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ok{color:var(--success)}.no{color:var(--danger)}
+.sub{font-size:1.12cqw;color:rgba(255,255,255,.46);font-weight:300;margin-top:1cqw;line-height:1.55;flex:none}
+.tag{display:inline-block;background:rgba(255,255,255,.08);border-radius:.9cqw;padding:.75cqw 1.3cqw;font-size:1.1cqw;font-weight:500;margin:.4cqw .55cqw 0 0;color:rgba(255,255,255,.85)}
+table{width:100%;border-collapse:collapse;font-size:1.24cqw;font-variant-numeric:tabular-nums}
+th{font-size:.72cqw;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:right;padding:.55cqw .7cqw;border-bottom:.06cqw solid rgba(255,255,255,.16);font-weight:700}
+th:first-child,td:first-child{text-align:left}
+td{text-align:right;padding:.72cqw .7cqw;border-bottom:.04cqw solid rgba(255,255,255,.07);color:rgba(255,255,255,.64)}
+td b{color:#fff;font-weight:700}
+tr.mk td{background:rgba(102,126,234,.12);color:rgba(255,255,255,.92)}
+.eq{font-size:1.5cqw;font-weight:500;line-height:1.85;color:rgba(255,255,255,.85);font-variant-numeric:tabular-nums;flex:none}
+.eq em{font-style:normal;color:var(--accent);font-weight:700}
+.wrap{flex:1;min-height:0;position:relative;display:flex}
+.wrap svg{width:100%;height:100%;display:block}
+.axr{position:relative;height:1.5cqw;flex:none;margin-top:.55cqw}
+.axr em{position:absolute;top:0;transform:translateX(-50%);font-style:normal;font-size:.8cqw;color:rgba(255,255,255,.4);font-weight:600;white-space:nowrap}
+.axr em:first-child{transform:none}.axr em.r{transform:translateX(-100%)}
+.axl{position:absolute;top:0;left:0;font-size:.8cqw;color:rgba(255,255,255,.4);font-weight:600;line-height:1.9;z-index:2}
+svg .grid{stroke:rgba(255,255,255,.08);stroke-width:.6}
+
+.bar{height:.75cqw;border-radius:99em;background:rgba(255,255,255,.09);overflow:hidden;margin-top:.9cqw;flex:none}
+.bar i{display:block;height:100%;border-radius:99em;background:linear-gradient(90deg,var(--primary),var(--accent))}
+.cols{flex:1;min-height:0;display:flex;align-items:flex-end;gap:1.4cqw;padding-bottom:1.6cqw}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative}
+.col u{display:block;font-style:normal;text-decoration:none;font-size:.82cqw;color:rgba(255,255,255,.8);text-align:center;margin-bottom:.4cqw;font-variant-numeric:tabular-nums}
+.col s{display:block;text-decoration:none;background:rgba(102,126,234,.55);border-radius:.3cqw .3cqw 0 0}
+.col q{display:block;background:var(--danger);border-radius:0 0 .3cqw .3cqw}
+.col em{position:absolute;bottom:-1.5cqw;left:0;right:0;text-align:center;font-style:normal;font-size:.78cqw;color:rgba(255,255,255,.38);font-weight:600}
+</style></head><body>
+<div class="pg" id="pg"></div><div class="bg-canvas"></div>
+<div class="orb-container"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+<div class="noise"></div><div id="three-canvas"></div><div class="container">
+
+<section class="visible"><div class="stage"><div class="kick">BUS 452 · Group Presentation</div><div class="big">Triangular<br>Arbitrage<br>&amp; Comerci</div>
+<div class="b" style="left:50.9375%;top:30.0000%;width:43.4375%;height:34.0000%"><div class='lab'>Team</div><div style='flex:none'><span class='tag'>Bryan Delgado</span><span class='tag'>Richard Ashbeck</span><span class='tag'>Mahipal Kukkar</span><span class='tag'>Andrei Volodin</span></div><div class='sub' style='margin-top:2.4cqw;font-size:1.3cqw;line-height:1.8'>Live EUR · USD · JPY triangle<br>Mid-rates first, then bid and ask</div></div><div class="foot">Triangular Arbitrage</div><div class="pgn">01 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">01 - Data</div><div class="hd">One snapshot</div>
+<div class="b t" style="left:5.6250%;top:27.8000%;width:58.4375%;height:60.2000%"><div class='lab'>Investing.com · 14 September 2026 · site time</div><table><thead><tr><th>Pair</th><th>Bid</th><th>Ask</th><th>Stamp</th></tr></thead><tbody>
+<tr><td>EUR / USD</td><td><b>1.1633</b></td><td><b>1.1635</b></td><td>02:07:58</td></tr>
+<tr><td>USD / JPY</td><td><b>153.32</b></td><td><b>153.33</b></td><td>02:08:00</td></tr>
+<tr class="mk"><td>EUR / JPY</td><td><b>178.37</b></td><td><b>178.39</b></td><td>02:08:02</td></tr></tbody></table><div class='sub' style='margin-top:1.8cqw'>All three taken from one page. Quotes pulled minutes apart manufacture arbitrage that never existed.</div></div>
+<div class="b" style="left:65.9375%;top:27.8000%;width:28.4375%;height:29.0000%"><div class='lab'>Spread of timestamps</div><div class='n xl g' style='font-size:5.6cqw'>4s</div><div class='sub'>Across all three pairs</div></div>
+<div class="b" style="left:65.9375%;top:59.0000%;width:28.4375%;height:29.0000%"><div class='lab'>The triangle</div><div class='eq' style='font-size:1.35cqw'>EUR → <em>USD</em> → JPY</div><div class='sub'>Dollar is the pivot leg</div></div><div class="foot">Triangular Arbitrage</div><div class="pgn">02 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">02 - Notation</div><div class="hd">The slash points the other way</div>
+<div class="b" style="left:5.6250%;top:27.8000%;width:43.4375%;height:26.0000%"><div class='lab'>Vendor convention</div><div class='eq' style='font-size:1.35cqw'>EUR/USD → base <em>first</em><br>dollars per one euro</div></div>
+<div class="b" style="left:50.9375%;top:27.8000%;width:43.4375%;height:26.0000%"><div class='lab'>Eun &amp; Resnick</div><div class='eq' style='font-size:1.35cqw'>S($/€) → base <em>below</em><br>dollars per one euro</div></div>
+<div class="b t" style="left:5.6250%;top:56.0000%;width:88.7500%;height:32.0000%"><div class='lab'>Same order on screen, opposite meaning in textbook notation</div><table><thead><tr><th>Ticker</th><th>Textbook</th><th>Terms</th><th>Reads as</th></tr></thead><tbody>
+<tr><td>EUR / USD</td><td><b>S($/€)</b></td><td>American</td><td>dollars per one euro</td></tr>
+<tr><td>USD / JPY</td><td><b>S(¥/$)</b></td><td>European</td><td>yen per one dollar</td></tr>
+<tr class="mk"><td>EUR / JPY</td><td><b>S(¥/€)</b></td><td>cross</td><td>yen per one euro</td></tr></tbody></table></div><div class="foot">Triangular Arbitrage</div><div class="pgn">03 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">03 - Mid-rates</div><div class="hd">The dollar cancels</div>
+<div class="b" style="left:5.6250%;top:27.8000%;width:58.4375%;height:34.0000%"><div class='lab'>Synthetic cross</div><div class='eq'>S(¥/€) = S($/€) <em>×</em> S(¥/$)<br>= 1.1634 × 153.325 = <em>178.3783</em></div></div>
+<div class="b" style="left:5.6250%;top:64.0000%;width:58.4375%;height:24.0000%"><div class='lab'>Why multiply, not divide</div><div class='sub' style='font-size:1.25cqw;margin-top:0'>USD sits in the numerator of one quote and the denominator of the other, so it cancels by product. Two European-term quotes would cancel by quotient instead.</div></div>
+<div class="b" style="left:65.9375%;top:27.8000%;width:28.4375%;height:18.6000%"><div class='lab'>Synthetic</div><div class='n s'>178.3783</div></div>
+<div class="b" style="left:65.9375%;top:48.6000%;width:28.4375%;height:18.6000%"><div class='lab'>Quoted</div><div class='n s g'>178.3800</div></div>
+<div class="b" style="left:65.9375%;top:69.4000%;width:28.4375%;height:18.6000%"><div class='lab'>Gap, ¥ per €</div><div class='n s'>0.0017</div></div><div class="foot">Triangular Arbitrage</div><div class="pgn">04 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">04 - Mid-rates</div><div class="hd">Nine dollars fifty</div>
+<div class="b t" style="left:5.6250%;top:27.8000%;width:58.4375%;height:60.2000%"><div class='lab'>Quoted above synthetic → euro dear in yen → sell it there</div><table><thead><tr><th>Step</th><th>Rate</th><th>Result</th></tr></thead><tbody>
+<tr><td>USD → EUR</td><td>÷ 1.1634</td><td><b>€859,549.60</b></td></tr>
+<tr><td>EUR → JPY</td><td>× 178.38</td><td><b>¥153,326,456.94</b></td></tr>
+<tr><td>JPY → USD</td><td>÷ 153.325</td><td><b>$1,000,009.50</b></td></tr>
+<tr class="mk"><td>Profit</td><td>on $1,000,000</td><td><b>$9.50</b></td></tr></tbody></table></div>
+<div class="b" style="left:65.9375%;top:27.8000%;width:28.4375%;height:29.0000%"><div class='lab'>Return per cycle</div><div class='n s'>0.00095%</div></div>
+<div class="b" style="left:65.9375%;top:59.0000%;width:28.4375%;height:29.0000%"><div class='lab'>One tick on 178</div><div class='n s no'>0.0056%</div><div class='sub'>Six times the gap found</div></div><div class="foot">Triangular Arbitrage</div><div class="pgn">05 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">05 - Mid-rates</div><div class="hd">Inside the rounding</div>
+<div class="b t" style="left:5.6250%;top:27.8000%;width:88.7500%;height:30.0000%"><div class='lab'>Discrepancy against quote granularity</div><div class="wrap"><svg viewBox='0 0 860 80' preserveAspectRatio='none'><rect x='0' y='30' width='860' height='20' rx='10' fill='rgba(255,255,255,.08)'/><rect x='0' y='30' width='769' height='20' rx='10' fill='rgba(244,67,54,.5)'/><rect x='0' y='30' width='137' height='20' rx='10' fill='#667eea'/><line class='grid' x1='137' y1='8' x2='137' y2='72'/><line class='grid' x1='769' y1='8' x2='769' y2='72'/></svg></div><div class="axr"><em style="left:0.00%" class="">0</em><em style="left:15.93%" class="">gap 0.0017</em><em style="left:89.42%" class="">rounding step 0.0100</em><em style="left:100.00%" class="r">¥</em></div></div>
+<div class="b" style="left:5.6250%;top:60.0000%;width:43.4375%;height:28.0000%"><div class='lab'>Verdict</div><div class='n s no'>Artefact</div><div class='sub'>The whole gap fits inside the last digit of the quote</div></div>
+<div class="b" style="left:50.9375%;top:60.0000%;width:43.4375%;height:28.0000%"><div class='lab'>What a mid-rate is</div><div class='sub' style='font-size:1.25cqw;margin-top:0'>The average of two prices. Nobody transacts at the average- you buy at ask and sell at bid, every single time.</div></div><div class="foot">Triangular Arbitrage</div><div class="pgn">06 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">06 - Bid and ask</div><div class="hd">Multiplication keeps the sides</div>
+<div class="b" style="left:5.6250%;top:27.8000%;width:58.4375%;height:34.0000%"><div class='lab'>Synthetic range</div><div class='eq' style='font-size:1.4cqw'>bid = 1.1633 × 153.32 = <em>178.3571</em><br>ask = 1.1635 × 153.33 = <em>178.3995</em></div></div>
+<div class="b" style="left:5.6250%;top:64.0000%;width:58.4375%;height:24.0000%"><div class='lab'>The rule underneath</div><div class='sub' style='font-size:1.25cqw;margin-top:0'>A side flips only when a quote is inverted. Multiplying inverts nothing, so bid pairs with bid. Dividing inverts the denominator, so the sides cross.</div></div>
+<div class="b" style="left:65.9375%;top:27.8000%;width:28.4375%;height:29.0000%"><div class='lab'>Here · multiply</div><div class='eq' style='font-size:1.3cqw'>bid <em>×</em> bid<br>ask <em>×</em> ask</div></div>
+<div class="b" style="left:65.9375%;top:59.0000%;width:28.4375%;height:29.0000%"><div class='lab'>Two European quotes · divide</div><div class='eq' style='font-size:1.3cqw'>bid <em>÷</em> ask<br>ask <em>÷</em> bid</div></div><div class="foot">Triangular Arbitrage</div><div class="pgn">07 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">07 - Bid and ask</div><div class="hd">Full overlap</div>
+<div class="b t" style="left:5.6250%;top:27.8000%;width:88.7500%;height:34.0000%"><div class='lab'>Synthetic band against the quoted band</div><div class="wrap"><svg viewBox='0 0 860 110' preserveAspectRatio='none'><rect x='111' y='24' width='663' height='22' rx='11' fill='#667eea' opacity='.75'/><rect x='313' y='62' width='312' height='22' rx='11' fill='#f093fb'/><line class='grid' x1='111' y1='8' x2='111' y2='102'/><line class='grid' x1='774' y1='8' x2='774' y2='102'/></svg></div><div class="axr"><em style="left:12.91%" class="">178.3571</em><em style="left:36.36%" class="">178.37</em><em style="left:72.73%" class="">178.39</em><em style="left:90.00%" class="">178.3995</em></div></div>
+<div class="b" style="left:5.6250%;top:64.0000%;width:43.4375%;height:24.0000%"><div class='lab'>Test one</div><div class='eq' style='font-size:1.3cqw'>direct bid 178.37 <em>&lt;</em> synth ask 178.3995</div></div>
+<div class="b" style="left:50.9375%;top:64.0000%;width:43.4375%;height:24.0000%"><div class='lab'>Test two</div><div class='eq' style='font-size:1.3cqw'>direct ask 178.39 <em>&gt;</em> synth bid 178.3571</div></div><div class="foot">Triangular Arbitrage</div><div class="pgn">08 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">08 - Result</div><div class="hd">The sign flips</div>
+<div class="b" style="left:5.6250%;top:27.8000%;width:20.7813%;height:26.0000%"><div class='lab'>On mid-rates</div><div class='n s g'>+$9.50</div><div class='sub'>Phantom</div></div>
+<div class="b" style="left:28.2813%;top:27.8000%;width:20.7813%;height:26.0000%"><div class='lab'>USD→EUR→JPY→USD</div><div class='n s no'>−$165</div><div class='sub'>With spreads</div></div>
+<div class="b" style="left:50.9376%;top:27.8000%;width:20.7813%;height:26.0000%"><div class='lab'>USD→JPY→EUR→USD</div><div class='n s no'>−$184</div><div class='sub'>Reverse cycle</div></div>
+<div class="b" style="left:73.5939%;top:27.8000%;width:20.7813%;height:26.0000%"><div class='lab'>Cost of three spreads</div><div class='n s'>1.65 bp</div><div class='sub'>Per cycle</div></div>
+<div class="b" style="left:5.6250%;top:56.0000%;width:88.7500%;height:32.0000%"><div class='lab'>Finding</div><div class='eq' style='font-size:1.45cqw'>Adding spreads did not <em>shrink</em> the profit - it <em>reversed</em> it.<br>Mid-rate analysis systematically invents arbitrage that cannot be executed.</div><div class='sub' style='margin-top:1.4cqw'>The market must move 1.65 basis points beyond the synthetic band before the trade becomes real.</div></div><div class="foot">Triangular Arbitrage</div><div class="pgn">09 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">09 - Case study</div><div class="big" style="font-size:6.2cqw;top:24%">Comercial<br>Mexicana<br>2008</div>
+<div class="b" style="left:50.9375%;top:27.8000%;width:43.4375%;height:26.0000%"><div class='lab'>The firm</div><div class='sub' style='font-size:1.25cqw;margin-top:0'>Mexico's third largest grocery retailer. Revenue in pesos, costs in pesos, customers in Mexico.</div></div>
+<div class="b" style="left:50.9375%;top:56.0000%;width:20.7813%;height:32.0000%"><div class='lab'>NDF losses</div><div class='n s no'>$1.1bn</div><div class='sub'>BIS Quarterly, 2009</div></div>
+<div class="b" style="left:73.5939%;top:56.0000%;width:20.7813%;height:32.0000%"><div class='lab'>Filed</div><div class='n s'>9 Oct</div><div class='sub'>Concurso mercantil, 2008</div></div><div class="foot">Comercial Mexicana</div><div class="pgn">10 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">10 - Instrument</div><div class="hd">Why the NDF hid the size</div>
+<div class="b" style="left:5.6250%;top:27.8000%;width:43.4375%;height:34.0000%"><div class='lab'>What actually settles</div><div class='eq' style='font-size:1.3cqw'>payout = notional <em>×</em><br>( fixing − contract ) <em>÷</em> fixing</div><div class='sub'>Principal never moves. It is a reference number, not a transfer.</div></div>
+<div class="b t" style="left:50.9375%;top:27.8000%;width:43.4375%;height:34.0000%"><div class='lab'>What that enables</div><div class='sub' style='font-size:1.22cqw;margin-top:0;line-height:2'>No funding required to carry the notional<br>Balance sheet far smaller than the exposure<br>Position scales past any operational need<br>Loss unbounded when the peso falls</div></div>
+<div class="b" style="left:5.6250%;top:64.0000%;width:88.7500%;height:24.0000%"><div class='lab'>The payoff shape</div><div class='eq' style='font-size:1.4cqw'>Short dollars pays a <em>small</em> amount every quarter the peso holds- and a <em>very large</em> amount once, when it does not.</div></div><div class="foot">Comercial Mexicana</div><div class="pgn">11 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">11 - Classification</div><div class="hd">A hedge needs something to hedge</div>
+<div class="b t" style="left:5.6250%;top:27.8000%;width:43.4375%;height:34.0000%"><div class='lab'>Hedge</div><div class='sub' style='font-size:1.22cqw;margin-top:0;line-height:2'>Underlying exposure exists and is measured<br>Notional sized to that exposure<br>Instrument carries opposite sensitivity<br>Combined ∂V/∂S moves toward zero</div></div>
+<div class="b t" style="left:50.9375%;top:27.8000%;width:43.4375%;height:34.0000%"><div class='lab'>Comerci</div><div class='sub' style='font-size:1.22cqw;margin-top:0;line-height:2'>Peso revenue, peso costs, peso customers<br>Notional far beyond any dollar liability<br>Same direction as the existing position<br>Combined ∂V/∂S moved away from zero</div></div>
+<div class="b" style="left:5.6250%;top:64.0000%;width:88.7500%;height:24.0000%"><div class='lab'>The claim made in court</div><div class='eq' style='font-size:1.35cqw'>The company stated it had traded derivatives since the 1990s to <em>hedge</em> currency risk.<br>The instruments were hedging instruments. The application was not.</div></div><div class="foot">Comercial Mexicana</div><div class="pgn">12 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">12 - Counterparties</div><div class="hd">Four dealers since 1999</div>
+<div class="b" style="left:5.6250%;top:27.8000%;width:20.7813%;height:26.0000%"><div class='lab'>Dealer</div><div class='n m'>JPMorgan</div><div class='sub'>Chase Bank, N.A.</div></div>
+<div class="b" style="left:28.2813%;top:27.8000%;width:20.7813%;height:26.0000%"><div class='lab'>Dealer</div><div class='n m'>Merrill</div><div class='sub'>Capital Markets AG</div></div>
+<div class="b" style="left:50.9376%;top:27.8000%;width:20.7813%;height:26.0000%"><div class='lab'>Dealer</div><div class='n m'>Goldman</div><div class='sub'>Sachs Paris Inc. et Cie</div></div>
+<div class="b" style="left:73.5939%;top:27.8000%;width:20.7813%;height:26.0000%"><div class='lab'>Dealer</div><div class='n m'>Barclays</div><div class='sub'>Bank PLC</div></div>
+<div class="b" style="left:5.6250%;top:56.0000%;width:88.7500%;height:32.0000%"><div class='lab'>The structural point</div><div class='eq' style='font-size:1.4cqw'>Each dealer saw only <em>its own</em> book. ISDA nets exposure per dealer, never across them.</div><div class='sub' style='margin-top:1.4cqw'>The aggregate position was visible to nobody outside the firm - and, as it emerged, to almost nobody inside it. Source: JPMorgan Chase Bank N.A. v Controladora Comercial Mexicana, Supreme Court of New York, 2010.</div></div><div class="foot">Comercial Mexicana</div><div class="pgn">13 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">13 - Governance</div><div class="hd">Treasury as a profit centre</div>
+<div class="b t" style="left:5.6250%;top:27.8000%;width:43.4375%;height:34.0000%"><div class='lab'>What failed</div><div class='sub' style='font-size:1.22cqw;margin-top:0;line-height:2'>No notional limit on treasury positions<br>Board without sight of aggregate exposure<br>Derivative gains booked as performance<br>Borrowing used to fund the speculation</div></div>
+<div class="b" style="left:50.9375%;top:27.8000%;width:43.4375%;height:34.0000%"><div class='lab'>Why it survived for years</div><div class='sub' style='font-size:1.22cqw;margin-top:0;line-height:1.9'>The peso had been stable or strengthening. The position paid every quarter it was open, and a treasury that reports profit is not questioned.</div></div>
+<div class="b" style="left:5.6250%;top:64.0000%;width:88.7500%;height:24.0000%"><div class='lab'>Not an isolated failure</div><div class='eq' style='font-size:1.35cqw'>Cemex took comparable damage. In Brazil, Aracruz, Votorantim and Sadia lost roughly <em>4.9bn</em> reais on the same trade.</div></div><div class="foot">Comercial Mexicana</div><div class="pgn">14 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="kick">14 - Close</div><div class="hd">One idea, both halves</div>
+<div class="b t" style="left:5.6250%;top:27.8000%;width:58.4375%;height:60.2000%"><div class='lab'>Twenty days</div><table><tbody>
+<tr><td>1999</td><td>Dealer relationships begin</td></tr>
+<tr><td>2000s</td><td>Short dollar position pays every quarter</td></tr>
+<tr><td>15 Sep 2008</td><td><b>Lehman Brothers files</b></td></tr>
+<tr><td>Sep–Oct</td><td>Peso falls more than <b>20%</b> in one month</td></tr>
+<tr class="mk"><td>9 Oct 2008</td><td><b>Concurso mercantil · $1.1bn lost</b></td></tr>
+<tr><td>2012–15</td><td>Assets sold · absorbed by Soriana</td></tr></tbody></table></div>
+<div class="b" style="left:65.9375%;top:27.8000%;width:28.4375%;height:29.0000%"><div class='lab'>Part one</div><div class='sub' style='font-size:1.22cqw;margin-top:0'>A mid-rate is a price nobody trades at. A $9.50 profit was really a $165 loss.</div></div>
+<div class="b" style="left:65.9375%;top:59.0000%;width:28.4375%;height:29.0000%"><div class='lab'>Part two</div><div class='sub' style='font-size:1.22cqw;margin-top:0'>A notional is a sum nobody funds. It looked like income until it was $1.1 billion.</div></div><div class="foot">Triangular Arbitrage &amp; Comerci</div><div class="pgn">15 / 15</div></div></section>
+
+<section class="fade-in"><div class="stage"><div class="big" style="top:36%">Thank you</div></div></section></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+const c=document.getElementById('three-canvas');const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.1,1000);
+const r=new THREE.WebGLRenderer({antialias:true,alpha:true});
+r.setSize(innerWidth,innerHeight);r.setPixelRatio(Math.min(devicePixelRatio,2));
+r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=0;c.appendChild(r.domElement);
+const a=new THREE.PointLight(0x6366FF,100);a.position.set(-12,8,8);scene.add(a);
+const bl=new THREE.PointLight(0xFF0080,205);bl.position.set(12,-8,8);scene.add(bl);
+const d=new THREE.DirectionalLight(0xffffff,1);d.position.set(0,8,12);scene.add(d);
+const t=new THREE.Mesh(new THREE.TorusGeometry(2,0.8,100,100),new THREE.MeshPhysicalMaterial({color:0x667eea,roughness:.25,metalness:.5,sheen:1,sheenColor:0xffffff,clearcoat:.5,ior:1.5,thickness:.5}));
+scene.add(t);camera.position.z=5;
+const cp=new EffectComposer(r);cp.addPass(new RenderPass(scene,camera));
+cp.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),0.5,0.6,0));
+let mx=0,my=0,sp=0,sv=0,ly=scrollY;
+addEventListener('mousemove',e=>{mx=(e.clientX-innerWidth/2)/(innerWidth/2);my=(e.clientY-innerHeight/2)/(innerHeight/2)},{passive:true});
+addEventListener('scroll',()=>{const h=document.body.scrollHeight-innerHeight;sp=scrollY/h;sv+=(Math.abs(scrollY-ly)-sv)*0.35;ly=scrollY;
+ document.getElementById('pg').style.width=(sp*100)+'%';},{passive:true});
+(function L(){requestAnimationFrame(L);sv*=0.92;const bo=Math.min(sv*0.002,0.045);
+ t.rotation.x+=0.0018+bo;t.rotation.y+=0.0024+bo*1.4;t.rotation.z+=0.0008;
+ t.scale.setScalar(1+Math.sin(sp*Math.PI)*0.3);
+ t.position.x+=(mx*2.2-t.position.x)*0.028;t.position.y+=(-my*2.2-t.position.y)*0.028;
+ camera.position.z+=((6.2-sp*2.2)-camera.position.z)*0.03;
+ camera.position.x+=(mx*1.6-camera.position.x)*0.022;camera.position.y+=(-my*1.6-camera.position.y)*0.022;
+ camera.lookAt(0,0,0);cp.render()})();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();r.setSize(innerWidth,innerHeight);cp.setSize(innerWidth,innerHeight)});
+</script>
+<script>
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:.2});
+document.querySelectorAll('section').forEach(s=>io.observe(s));
+let px=0,py=0,tx=0,ty=0,raf=null;
+addEventListener('mousemove',e=>{px=e.clientX/innerWidth-.5;py=e.clientY/innerHeight-.5;if(!raf)raf=requestAnimationFrame(st)},{passive:true});
+function st(){raf=null;tx+=(px-tx)*.12;ty+=(py-ty)*.12;const R=document.documentElement;
+ R.style.setProperty('--ry',(tx*2.2).toFixed(3)+'deg');R.style.setProperty('--rx',(-ty*1.5).toFixed(3)+'deg');
+ if(Math.abs(px-tx)>.001||Math.abs(py-ty)>.001)raf=requestAnimationFrame(st)}
+</script></body></html>
